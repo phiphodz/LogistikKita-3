@@ -116,15 +116,16 @@ class MasterPricingRule(models.Model):
 
 class CustomerProfile(models.Model):
     """
-    KOREKSI: Menambahkan field city dan address dari form pendaftaran
+    KOREKSI: Menambahkan field city dan address dari form pendaftaran. 
+    Field ini dibuat null=True dan blank=True untuk mengatasi error migrasi awal.
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer_profile')
     phone_number = models.CharField(max_length=15, unique=True, verbose_name="Nomor WA (Username)")
     company_name = models.CharField(max_length=100, verbose_name="Nama Perusahaan/Shipper") # Wajib, bukan null
     
     # --- FIELD BARU DARI SIGNUP FORM ---
-    city = models.CharField(max_length=100, verbose_name="Kota/Kabupaten Domisili")
-    address = models.TextField(verbose_name="Alamat Detail Perusahaan")
+    city = models.CharField(max_length=100, verbose_name="Kota/Kabupaten Domisili", null=True, blank=True) # KOREKSI DI SINI
+    address = models.TextField(verbose_name="Alamat Detail Perusahaan", null=True, blank=True) # KOREKSI DI SINI
     # ----------------------------------
     
     risk_status = models.CharField(max_length=20, choices=RISK_STATUS_CHOICES, default='CAUTION') # Default: CAUTION

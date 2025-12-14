@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logistik Kita</title>
+  </head>
+  <body>
+    <!-- WADAH REACT (JANGAN DIHAPUS) -->
+    <div id="root"></div>
+
+    <!-- SCRIPT UTAMA -->
+    <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- SCRIPT DARURAT: Menampilkan error di layar jika putih -->
+    <script>
+      window.addEventListener('error', function(event) {
+        document.body.innerHTML = `
+          <div style="padding: 20px; color: red; font-family: sans-serif;">
+            <h1>🔥 Error Terdeteksi</h1>
+            <p>Aplikasi gagal berjalan karena:</p>
+            <pre style="background: #eee; padding: 10px;">${event.message}</pre>
+            <p>Coba cek terminal atau file index.html</p>
+          </div>
+        `;
+      });
+    </script>
+  </body>
+</html>
+
+

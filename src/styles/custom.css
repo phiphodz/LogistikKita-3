@@ -1,0 +1,212 @@
+/* Tambahkan kelas ini untuk mematikan transisi saat load */
+.no-transition, .no-transition * {
+    transition: none !important;
+}
+
+/* ======================================================= */
+/* == PALET WARNA LOGISTIK KITA (MERAH-KUNING) & FONT == */
+/* ======================================================= */
+:root {
+    /* --- Light Mode Default --- */
+    --color-primary: #E51D2A;    /* Merah Menyala */
+    --color-primary-dark: #b91c1c; 
+    --color-accent: #FDAD61;     /* Orange Muda Baru */
+    --color-accent-dark: #f09f53; /* Shade gelap dari #fdad61 */
+    --color-dark: #1f2937;       /* Gray 800 - Teks Utama */
+    --color-light: #ffffff;      /* Putih Bersih */
+    --color-bg-light: #f3f4f6;   /* Gray 100 - Background/Border */
+    --color-text-secondary: #6b7280; /* Gray 500/600 */
+    
+    --image-overlay: rgba(255, 255, 255, 0.9); 
+    
+    /* Glass utilities */
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    
+    /* NEW: Soft Neon Glow Light (Kombinasi Merah & Orange Baru) */
+    --neon-shadow: 0 0 10px rgba(229, 29, 42, 0.2);
+    --neon-shadow-hover: 0 0 15px rgba(229, 29, 42, 0.6), 0 0 5px rgba(253, 173, 97, 0.3);
+}
+
+/* --- Dark Mode Overrides (Deep Dark Gray) --- */
+html.dark {
+    --color-primary: #f87171;    
+    --color-primary-dark: #ef4444; 
+    --color-accent: #FDAD61;     /* Orange Muda Baru */
+    --color-accent-dark: #f09f53; 
+    --color-dark: #f3f4f6;       
+    --color-light: #18181B;      
+    --color-bg-light: #27272A;   
+    --color-text-secondary: #a1a1aa; 
+    
+    --image-overlay: rgba(24, 24, 27, 0.85); 
+    
+    /* Glass utilities (Dark) */
+    --glass-bg: rgba(24, 24, 27, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.05);
+
+    /* NEW: Soft Neon Glow Dark (Kombinasi Merah & Orange Baru) */
+    --neon-shadow: 0 0 10px rgba(248, 113, 113, 0.15);
+    --neon-shadow-hover: 0 0 15px rgba(248, 113, 113, 0.4), 0 0 5px rgba(253, 173, 97, 0.2);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-light); }
+::-webkit-scrollbar-thumb { background: var(--color-primary-dark); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+
+/* Base Settings */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--color-dark);
+    overflow-x: hidden;
+    background-color: var(--image-overlay); 
+}
+
+/* Perbaikan 3: Nonaktifkan Fixed Background di HP */
+.parallax-bg {
+    background-image: linear-gradient(to bottom, var(--image-overlay), var(--image-overlay)), 
+                      url('/background-lk.jpg'); /* UPDATE PATH: Hapus 'assets/' */
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transition: background-image 0.5s;
+    transform: translate3d(0, 0, 0); 
+}
+
+/* SOLUSI SCROLL PATAH-PATAH DI HP */
+@media (max-width: 768px) {
+    .parallax-bg {
+        background-attachment: scroll; 
+    }
+}
+
+/* Utility Animations */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Perbaikan 4: Optimasi Hardware Acceleration untuk Glass & Carousel */
+.glass, .glass-nav {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    transition: background 0.3s, border 0.3s;
+    will-change: backdrop-filter, background-color, transform; 
+}
+
+#carousel-track-fleet, #carousel-track-services, #carousel-track-testimonials {
+    will-change: transform; 
+}
+
+/* Glass Nav (Sticky/Default state) */
+.glass-nav {
+    background: var(--image-overlay);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--color-bg-light);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Glass Nav scrolled state for clean transition */
+.glass-nav.scrolled {
+     background: var(--image-overlay);
+     border-bottom-color: transparent; 
+}
+
+/* Dropdown Menu Desktop */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px); 
+    min-width: 200px;
+    padding: 10px 0;
+    border-radius: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+    z-index: 60;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+.dropdown-parent:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0); 
+}
+.dropdown-menu a {
+    display: block;
+    padding: 8px 20px;
+    white-space: nowrap;
+}
+
+
+/* Mobile Menu (Smooth Animation) */
+#mobile-menu {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#mobile-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+/* Mobile Accordion */
+.mobile-accordion summary {
+    list-style: none;
+    position: relative;
+    padding-right: 2rem;
+}
+.mobile-accordion summary::-webkit-details-marker {
+    display: none;
+}
+.mobile-accordion summary::after {
+    content: '+';
+    position: absolute;
+    right: 1rem;
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: transform 0.3s;
+}
+.mobile-accordion[open] summary::after {
+    content: '-';
+    transform: rotate(180deg);
+}
+
+/* Soft Neon Glow Frame for Testimonial Cards */
+.testimonial-card {
+    box-shadow: var(--neon-shadow);
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s;
+}
+.testimonial-card:hover {
+    box-shadow: var(--neon-shadow-hover);
+    transform: translateY(-5px); 
+}
+
+/* Floating WhatsApp Button */
+#whatsapp-cta {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #25D366; /* WhatsApp Green */
+    color: white;
+    padding: 12px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s;
+}
+#whatsapp-cta:hover {
+    transform: scale(1.1);
+}

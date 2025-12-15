@@ -19,7 +19,7 @@ if not SECRET_KEY:
      # WARNING: Jangan gunakan kunci default ini di Production!
      SECRET_KEY = 'django-insecure-kunci-default-untuk-dev-aman'
 
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 # Memastikan akses dari Codespace dan localhost
 ALLOWED_HOSTS = ['*']

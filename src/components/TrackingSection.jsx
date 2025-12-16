@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Loader2, Truck, CheckCircle, Clock, Package, MapPin } from 'lucide-react';
+import { Search, Loader2, Truck, Package, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const TrackingSection = ({ darkMode }) => {
@@ -26,8 +26,8 @@ const TrackingSection = ({ darkMode }) => {
             case 'AT_WAREHOUSE': return <MapPin size={16} className="text-blue-500" />;
             case 'DEPARTED': return <Truck size={16} className="text-orange-500" />;
             case 'ON_DELIVERY': return <Truck size={16} className="text-primary" />;
-            case 'ESTIMATED_DELIVERY': return <Clock size={16} className="text-purple-500" />;
-            default: return <CheckCircle size={16} className="text-gray-500" />;
+            case 'ESTIMATED_DELIVERY': return <Loader2 size={16} className="text-purple-500 animate-spin" />;
+            default: return <Package size={16} className="text-gray-500" />;
         }
     };
 
@@ -55,15 +55,15 @@ const TrackingSection = ({ darkMode }) => {
     };
 
     return (
-        <div className="relative z-20">
-            <div className="w-full max-w-4xl mx-auto px-4 -mt-16" id="tracking"> {/* FIXED: -mt-16 bukan -mt-24 */}
-                <div className={`glass-container p-6 md:p-8 shadow-2xl ${darkMode ? 'bg-gray-800/80' : 'bg-white/95'} backdrop-blur-xl transition-all duration-300`}>
+        <div className="relative z-20 mt-0"> {/* PERBAIKAN: mt-0 bukan -mt-16 */}
+            <div className="w-full max-w-4xl mx-auto px-4 mt-4" id="tracking"> {/* PERBAIKAN: mt-4 bukan -mt-16 */}
+                <div className={`glass-container p-6 md:p-8 shadow-2xl ${darkMode ? 'bg-gray-800/90' : 'bg-white/95'} backdrop-blur-xl transition-all duration-300`}>
                     
                     <div className="text-center mb-8">
-                        <h2 className="text-2xl font-black text-gray-900 dark:text-white">
+                        <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">
                             Lacak Status Pengiriman
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base mt-2">
                             Masukkan Nomor Resi atau ID Transaksi Anda
                         </p>
                     </div>
@@ -76,13 +76,13 @@ const TrackingSection = ({ darkMode }) => {
                                 value={resi}
                                 onChange={(e) => setResi(e.target.value)}
                                 placeholder="Contoh: LKG-8829100 atau LKG-DEMO-001" 
-                                className="input-field pl-12 py-4 text-lg"
+                                className="input-field pl-12 py-4 text-base md:text-lg"
                                 disabled={loading}
                             />
                         </div>
                         <button 
                             type="submit" 
-                            className="btn-primary md:w-auto px-8 py-4 h-full shadow-lg flex items-center justify-center gap-2"
+                            className="btn-primary md:w-auto px-8 py-4 h-full shadow-lg flex items-center justify-center gap-2 w-full md:w-auto"
                             disabled={loading}
                         >
                             {loading ? <Loader2 size={20} className="animate-spin" /> : 'Lacak'}

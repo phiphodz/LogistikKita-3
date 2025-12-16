@@ -1,3 +1,5 @@
+// src/App.jsx (KODE LENGKAP - DENGAN DEBUG INFO)
+
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
@@ -7,6 +9,7 @@ import Footer from './components/Footer';
 import Preloader from './components/Preloader';
 import ScrollNav from './components/ScrollNav';
 import FirebaseStatus from './components/FirebaseStatus';
+import DebugInfo from './components/DebugInfo'; // ✅ DEBUG INFO BARU
 
 // --- KOMPONEN LANDING PAGE ---
 import HeroSection from './components/HeroSection';
@@ -195,8 +198,13 @@ const App = () => {
                 <Footer darkMode={darkMode} />
             </div>
 
+            {/* KOMPONEN FIXED */}
             <FirebaseStatus isReady={isFirebaseReady} error={firebaseError} />
             <ScrollNav darkMode={darkMode} />
+            
+            {/* ✅ DEBUG INFO - TAMBAH DI SINI */}
+            <DebugInfo />
+            
         </div>
     );
 };

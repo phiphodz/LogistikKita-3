@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
-import { ArrowRight, TicketPercent, Globe } from 'lucide-react';
+import { ArrowRight, TicketPercent, Globe, ChevronDown } from 'lucide-react'; // TAMBAH ChevronDown
 import { Helmet } from 'react-helmet-async';
 
 const HeroSection = ({ darkMode }) => {
@@ -67,8 +67,7 @@ const HeroSection = ({ darkMode }) => {
     };
 
     return (
-        // PERBAIKAN: Tambah pb-32 dan min-h-[95vh]
-        <div className="relative w-full min-h-[95vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 pt-16 pb-32">
+        <div className="relative w-full min-h-[95vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 pt-16">
             
             <Helmet>
                 <title>Logistik Kita | Indonesia Freight Forwarding Network</title>
@@ -106,7 +105,7 @@ const HeroSection = ({ darkMode }) => {
                     </div>
                 </div>
 
-                {/* Headline - PASTIKAN "Tanpa" bukan "Tanya" */}
+                {/* Headline */}
                 <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-4 sm:mb-6 drop-shadow-2xl max-w-4xl leading-[1.1]">
                     Kirim Kargo 
                     <span className="block mt-1 sm:mt-2">
@@ -126,7 +125,7 @@ const HeroSection = ({ darkMode }) => {
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full max-w-md sm:max-w-none justify-center mb-8 sm:mb-12 px-2">
                     <button 
                         onClick={() => navigate('/simulasi-harga')}
-                        className="btn-primary w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 flex items-center justify-center gap-2 group shadow-xl shadow-primary/30 text-sm sm:text-base"
+                        className="btn-primary w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 flex items-center justify-center gap-2 group shadow-xl shadow-primary/30 text-sm sm:text-base whitespace-nowrap"
                     >
                         Cek Tarif Sekarang
                         <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -134,15 +133,15 @@ const HeroSection = ({ darkMode }) => {
 
                     <button 
                         onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-                        className="w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold text-sm sm:text-base transition-all hover:border-white/60 active:scale-95"
+                        className="w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold text-sm sm:text-base transition-all hover:border-white/60 active:scale-95 whitespace-nowrap"
                     >
                         Pelajari Layanan
                     </button>
                 </div>
 
-                {/* VOUCHER CARD - PERBAIKAN: mb-16 */}
+                {/* VOUCHER CARD - INI SEKARANG DI ATAS INDICATORS */}
                 <div 
-                    className="relative group overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl p-1 max-w-xs xs:max-w-sm sm:max-w-md cursor-pointer transition-all hover:border-primary/50 shadow-2xl active:scale-95 mb-16"
+                    className="relative group overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl p-1 max-w-xs xs:max-w-sm sm:max-w-md cursor-pointer transition-all hover:border-primary/50 shadow-2xl active:scale-95 mb-12"
                     onClick={handleClaimPromo}
                 >
                     <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
@@ -166,28 +165,40 @@ const HeroSection = ({ darkMode }) => {
                     </div>
                 </div>
 
-                {/* Indikator Slide - PERBAIKAN: bottom-28 */}
-                <div className="absolute bottom-28 sm:bottom-24 flex gap-2 sm:gap-3 z-30">
-                    {slides.map((_, idx) => (
-                        <button 
-                            key={idx}
-                            onClick={() => setCurrentSlide(idx)}
-                            aria-label={`Slide ${idx + 1}`}
-                            className={`h-1.5 rounded-full transition-all duration-500 shadow-sm ${
-                                idx === currentSlide 
-                                    ? 'w-8 sm:w-12 bg-primary' 
-                                    : 'w-2 sm:w-2 bg-white/40 hover:bg-white/60'
-                            }`}
-                        />
-                    ))}
+                {/* ============================================ */}
+                {/* PERUBAHAN BESAR: INDICATORS DI BAWAH VOUCHER CARD */}
+                {/* ============================================ */}
+                
+                {/* Container untuk indicators - DI BAWAH VOUCHER */}
+                <div className="mt-4 flex flex-col items-center gap-6">
+                    
+                    {/* Slide Indicators - SEKARANG DI CONTAINER TERPISAH */}
+                    <div className="flex gap-2 sm:gap-3">
+                        {slides.map((_, idx) => (
+                            <button 
+                                key={idx}
+                                onClick={() => setCurrentSlide(idx)}
+                                aria-label={`Slide ${idx + 1}`}
+                                className={`h-1.5 rounded-full transition-all duration-500 shadow-sm ${
+                                    idx === currentSlide 
+                                        ? 'w-8 sm:w-12 bg-primary' 
+                                        : 'w-2 sm:w-2 bg-white/40 hover:bg-white/60'
+                                }`}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Scroll Indicator dengan Arrow - LEBIH JELAS */}
+                    <div className="animate-bounce flex flex-col items-center">
+                        <p className="text-xs text-white/60 mb-2 font-medium">Scroll untuk melihat lebih lanjut</p>
+                        <div className="w-8 h-12 border-2 border-white/40 rounded-full flex justify-center relative">
+                            <div className="w-1.5 h-4 bg-white/70 rounded-full mt-2 animate-pulse"></div>
+                            <ChevronDown className="absolute bottom-1 text-white/70 w-5 h-5" />
+                        </div>
+                    </div>
+                    
                 </div>
 
-                {/* Scroll Indicator - PERBAIKAN: bottom-12 */}
-                <div className="absolute bottom-12 sm:bottom-12 animate-bounce">
-                    <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-                        <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
-                    </div>
-                </div>
             </div>
         </div>
     );

@@ -67,8 +67,8 @@ const HeroSection = ({ darkMode }) => {
     };
 
     return (
-        // PERBAIKAN: Kurangi padding top (pt-16 bukan pt-24), tambah min-height
-        <div className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 pt-16 pb-20">
+        // PERBAIKAN: Tambah pb-32 dan min-h-[95vh]
+        <div className="relative w-full min-h-[95vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 pt-16 pb-32">
             
             <Helmet>
                 <title>Logistik Kita | Indonesia Freight Forwarding Network</title>
@@ -106,7 +106,7 @@ const HeroSection = ({ darkMode }) => {
                     </div>
                 </div>
 
-                {/* Headline - PERBAIKAN: Pastikan "Tanpa" bukan "Tampa" */}
+                {/* Headline - PASTIKAN "Tanpa" bukan "Tanya" */}
                 <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-4 sm:mb-6 drop-shadow-2xl max-w-4xl leading-[1.1]">
                     Kirim Kargo 
                     <span className="block mt-1 sm:mt-2">
@@ -122,7 +122,7 @@ const HeroSection = ({ darkMode }) => {
                     Cek estimasi harga dalam hitungan detik.
                 </p>
 
-                {/* Action Buttons - PERBAIKAN: "Pelajari" bukan "Pelajarī" */}
+                {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full max-w-md sm:max-w-none justify-center mb-8 sm:mb-12 px-2">
                     <button 
                         onClick={() => navigate('/simulasi-harga')}
@@ -140,9 +140,9 @@ const HeroSection = ({ darkMode }) => {
                     </button>
                 </div>
 
-                {/* VOUCHER CARD */}
+                {/* VOUCHER CARD - PERBAIKAN: mb-16 */}
                 <div 
-                    className="relative group overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl p-1 max-w-xs xs:max-w-sm sm:max-w-md cursor-pointer transition-all hover:border-primary/50 shadow-2xl active:scale-95 mb-8"
+                    className="relative group overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl p-1 max-w-xs xs:max-w-sm sm:max-w-md cursor-pointer transition-all hover:border-primary/50 shadow-2xl active:scale-95 mb-16"
                     onClick={handleClaimPromo}
                 >
                     <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
@@ -166,8 +166,8 @@ const HeroSection = ({ darkMode }) => {
                     </div>
                 </div>
 
-                {/* Indikator Slide - PERBAIKAN: Naikkan lebih tinggi */}
-                <div className="absolute bottom-20 sm:bottom-24 flex gap-2 sm:gap-3 z-30">
+                {/* Indikator Slide - PERBAIKAN: bottom-28 */}
+                <div className="absolute bottom-28 sm:bottom-24 flex gap-2 sm:gap-3 z-30">
                     {slides.map((_, idx) => (
                         <button 
                             key={idx}
@@ -182,8 +182,8 @@ const HeroSection = ({ darkMode }) => {
                     ))}
                 </div>
 
-                {/* Scroll Indicator */}
-                <div className="absolute bottom-8 sm:bottom-12 animate-bounce">
+                {/* Scroll Indicator - PERBAIKAN: bottom-12 */}
+                <div className="absolute bottom-12 sm:bottom-12 animate-bounce">
                     <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
                         <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
                     </div>

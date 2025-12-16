@@ -1,4 +1,4 @@
-// src/apiConfig.js - FILE BARU (WRAPPER VERSION)
+// src/apiConfig.js - WRAPPER FOR BACKWARD COMPATIBILITY
 import { AppConfig } from './config/AppConfig';
 
 // ================================================
@@ -20,6 +20,7 @@ export const getAppConfig = () => ({ ...AppConfig });
 console.log('🔌 API Config migrated to AppConfig system');
 console.log('📡 Backend URL:', AppConfig.BACKEND_URL);
 console.log('🔗 Login Endpoint:', AppConfig.ENDPOINTS.LOGIN);
+console.log('🚀 App Features:', Object.keys(AppConfig.FEATURES).filter(k => AppConfig.FEATURES[k]));
 
 // 4. Deprecation warning untuk developer
 if (import.meta.env.DEV) {
@@ -27,7 +28,8 @@ if (import.meta.env.DEV) {
     '⚠️  apiConfig.js is now a wrapper for AppConfig.js\n' +
     '💡 Consider updating imports to use AppConfig directly:\n' +
     '   import { AppConfig } from "../config/AppConfig";\n' +
-    '   AppConfig.ENDPOINTS.LOGIN'
+    '   AppConfig.ENDPOINTS.LOGIN\n' +
+    '   AppConfig.BACKEND_URL'
   );
 }
 
@@ -36,10 +38,31 @@ if (import.meta.env.DEV) {
 // (untuk safety selama transisi)
 // ================================================
 const fallbackEndpoints = {
-  LOGIN: 'http://localhost:8000/api/token/',
-  CUSTOMER_REGISTER: 'http://localhost:8000/api/customer/register/',
-  // ... lainnya
+  LOGIN: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/token/`,
+  REFRESH: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/token/refresh/`,
+  CUSTOMER_REGISTER: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/customer/register/`,
+  CUSTOMER_VERIFY: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/customer/verify/`,
+  CUSTOMER_RESEND_VERIFICATION: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/customer/resend-verification/`,
+  FORGOT_PASSWORD_REQUEST: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/password/reset/`,
+  FORGOT_PASSWORD_CONFIRM: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/password/reset/confirm/`,
+  MITRA_REGISTER: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/mitra/register/`,
+  FLEETS: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/fleets/`,
+  GEOCODE: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/geocode/`,
+  PRICING: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/simulasi-harga/`,
+  PROMOS: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/promos/`,
+  TRACKING: `${AppConfig.BACKEND_URL || 'http://localhost:8000'}/api/tracking/`,
 };
 
 // Export fallback sebagai backup
 export const FALLBACK_ENDPOINTS = fallbackEndpoints;
+
+// Export default untuk compatibility
+export default {
+  API_BASE_URL,
+  ENDPOINTS,
+  getBaseUrl,
+  getBackendUrl,
+  getFrontendUrl,
+  getAppConfig,
+  FALLBACK_ENDPOINTS,
+};

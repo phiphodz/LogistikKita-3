@@ -1,5 +1,3 @@
-// tailwind.config.js
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -9,6 +7,14 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      screens: {
+        'xs': '375px',    // Extra small phones
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
+      },
       colors: {
         // === TEMA UTAMA (Primary Merah Tetap) ===
         primary: {
@@ -18,19 +24,16 @@ export default {
           'dark-hover': '#EF4444',
         },
 
-        // === BACKGROUND & SURFACE (PALET BARU YANG ELEGAN) ===
+        // === BACKGROUND & SURFACE ===
         background: {
           light: '#FFFFFF',
-          // Menggunakan warna Biru Dongker Gelap dari palet untuk background utama dark mode
           dark: '#212E3B',
         },
         surface: {
           light: '#EEF2F6',
-          // Warna base untuk card/surface di dark mode
           dark: '#212E3B',
         },
         // WARNA KHUSUS UNTUK EFEK GLASSMORPHISM DARK MODE
-        // Ini adalah warna #212E3B dengan transparansi 70%
         glass: {
           dark: 'rgba(33, 46, 59, 0.7)',
         },
@@ -38,17 +41,14 @@ export default {
         // === BORDER ===
         border: {
           light: '#D1D5DB',
-          // Menggunakan warna Abu-abu Tua dari palet untuk border yang subtle
           dark: '#535C66',
         },
 
         // === TEXT ===
         text: {
           main: '#1F2937',
-          // Menggunakan warna Abu-abu Terang/Putih Gading dari palet agar teks jelas
           'main-dark': '#E8EAE9',
           muted: '#6B7280',
-          // Menggunakan warna Abu-abu Sedang untuk teks sekunder
           'muted-dark': '#B2B6B9',
         },
 
@@ -65,13 +65,56 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
-      // Menambahkan definisi backdrop blur untuk efek glass
       backdropBlur: {
         xs: '2px',
       },
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+        'pulse-glow-red': 'pulse 2s ease-in-out infinite',
+        'fade-in': 'fadeIn 0.6s ease-out forwards',
+        'scroll': 'scroll 20s linear infinite',
+        'scroll-reverse': 'scroll-reverse 20s linear infinite',
+        'image-pulse': 'image-pulse 6s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: '0', transform: 'translateY(10px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        scrollReverse: {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+        imagePulse: {
+          '0%, 100%': { transform: 'scale(1.0)', opacity: '0.95' },
+          '50%': { transform: 'scale(1.02)', opacity: '1.0' },
+        },
+        'border-spin-glow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        'pulse-glow-red': {
+          '0%, 100%': { 
+            boxShadow: '0 0 20px rgba(211, 47, 47, 0.3)',
+            transform: 'scale(1)'
+          },
+          '50%': { 
+            boxShadow: '0 0 50px rgba(211, 47, 47, 0.6)',
+            transform: 'scale(1.05)'
+          },
+        }
+      },
+      boxShadow: {
+        'glass': '0 8px 32px rgba(0, 0, 0, 0.1)',
+        'glass-dark': '0 8px 32px rgba(0, 0, 0, 0.3)',
+      }
     },
   },
   plugins: [],
-}
+          }

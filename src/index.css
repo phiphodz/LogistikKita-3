@@ -1,4 +1,4 @@
-/* src/index.css */
+/* src/index.css - PERBAIKAN */
 
 @tailwind base;
 @tailwind components;
@@ -7,154 +7,64 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* FIX: Pastikan tidak ada horizontal scroll */
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
   body {
-    /* Menggunakan warna background baru yang sudah didefinisikan */
-    @apply bg-background-light dark:bg-background-dark text-text-main dark:text-text-main-dark antialiased overflow-x-hidden;
+    @apply bg-background-light dark:bg-background-dark text-text-main dark:text-text-main-dark antialiased;
+    /* FIX: Hapus overflow-x-hidden dari body, taruh di html */
+    margin: 0;
+    padding: 0;
   }
 
+  /* FIX: Hanya transition colors, bukan semua properties */
   *, ::before, ::after {
     @apply transition-colors duration-300 ease-in-out;
   }
 }
 
-/* === CUSTOM UTILITIES (RESEP RAHASIA KITA) === */
 @layer components {
-  /* 1. Class untuk Kontainer/Card dengan Efek Glassmorphism Elegan */
   .glass-container {
-    @apply bg-white/80 dark:bg-glass-dark backdrop-blur-md border border-white/40 dark:border-border-dark/30 shadow-2xl rounded-2xl transition-all;
+    @apply bg-white/80 dark:bg-glass-dark backdrop-blur-md border border-white/40 dark:border-border-dark/30 shadow-2xl rounded-2xl;
   }
 
-  /* 2. Class untuk Input Field Modern & Teks Terbaca */
   .input-field {
     @apply w-full p-3.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all
-           bg-white/50 dark:bg-surface-dark/50 /* Background semi-transparan */
-           border-border-light dark:border-border-dark /* Warna border adaptif */
-           text-text-main dark:text-text-main-dark /* TEKS UTAMA */
-           /* KESALAHAN SUDAH DIKOREKSI DI BAWAH INI */
-           placeholder-text-muted dark:placeholder-text-muted-dark; /* Placeholder adaptif */
+           bg-white/50 dark:bg-surface-dark/50
+           border-border-light dark:border-border-dark
+           text-text-main dark:text-text-main-dark
+           placeholder:text-text-muted dark:placeholder:text-text-muted-dark;
   }
 
-  /* 3. Class untuk Label Form */
   .input-label {
     @apply block text-sm font-bold mb-2 text-text-main dark:text-text-main-dark tracking-wide;
   }
 
-  /* 4. Class untuk Tombol Primary yang Konsisten */
   .btn-primary {
-    @apply w-full py-3.5 rounded-xl font-bold text-white transition-all transform active:scale-95 shadow-lg hover:shadow-xl
+    @apply w-full py-3.5 rounded-xl font-bold text-white transition-all active:scale-95 shadow-lg hover:shadow-xl
            bg-primary hover:bg-primary-hover dark:bg-primary-dark dark:hover:bg-primary-dark-hover;
   }
 }
 
-/* === ANIMASI LOGO NEON BERPUTAR BARU (Mengelilingi Kotak) === */
-
-/* Keyframes untuk Neon yang Berputar (Menggunakan Rotasi pada elemen anak) */
-@keyframes border-spin-glow {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Class Gabungan untuk Logo */
+/* FIX: Animasi logo yang lebih aman */
 .animate-logo-neon {
-    /* Menerapkan putaran yang sangat lambat */
     animation: border-spin-glow 8s linear infinite;
-    
-    /* Shadow yang berputar di sekeliling */
     box-shadow: 
-        0 0 5px rgba(248, 113, 129, 0.8), /* Inner glow */
-        0 0 15px rgba(248, 113, 129, 0.4); /* Outer glow */
-    
-    /* Memberi filter blur agar efek neon lebih lembut */
-    filter: blur(1.5px);
-    
-    /* Membuat elemen bundar agar putaran terlihat mengelilingi */
+        0 0 5px rgba(248, 113, 129, 0.8),
+        0 0 15px rgba(248, 113, 129, 0.4);
     border-radius: 50%;
-    
-    /* Penting: Elemen harus menutupi inset parent */
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
+    /* FIX: Ganti dari absolute ke relative agar tidak overflow */
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
 }
 
-/* === ANIMASI LAINNYA === */
-
-/* 1. Putar Lambat */
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.animate-spin-slow {
-  animation: spin-slow 3s linear infinite;
-}
-
-/* 2. Denyut Merah (RED PULSE) */
-@keyframes pulse-glow-red {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(211, 47, 47, 0.3);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 0 50px rgba(211, 47, 47, 0.6);
-    transform: scale(1.05);
-  }
-}
-.animate-pulse-glow-red {
-  animation: pulse-glow-red 2s ease-in-out infinite;
-}
-
-/* 3. Fade In */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-/* 4. Scroll Marquee (Kanan ke Kiri) */
-@keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.animate-scroll {
-  animation: scroll 20s linear infinite;
-}
-
-/* 5. Scroll Marquee TERBALIK (Kiri ke Kanan) */
-@keyframes scroll-reverse {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
-}
-.animate-scroll-reverse {
-  animation: scroll-reverse 20s linear infinite;
-}
-
-/* 6. Animasi Image Pulse/Breathing (Sangat Ringan) - BARU UNTUK MAINTENANCE PAGE */
-@keyframes image-pulse {
-  0%, 100% { transform: scale(1.0); opacity: 0.95; }
-  50% { transform: scale(1.02); opacity: 1.0; }
-}
-.animate-image-pulse {
-  animation: image-pulse 6s ease-in-out infinite;
-}
-
-/* Optimasi agar animasi Marquee ringan */
-.animate-scroll, .animate-scroll-reverse {
-  animation-play-state: running;
-}
-.animate-scroll:hover, .animate-scroll-reverse:hover {
-  animation-play-state: paused;
-}
-
-/* Utility: Hilangkan Scrollbar */
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-.no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
+/* Tambahkan ini untuk memastikan image tidak overflow */
+img, video {
+  max-width: 100%;
+  height: auto;
+    }

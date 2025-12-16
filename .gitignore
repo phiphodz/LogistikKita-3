@@ -43,3 +43,4 @@ media/
 # Environment Variables (PENTING BIAR PASSWORD GAK BOCOR)
 .env
 .env.local
+backend/staticfiles/

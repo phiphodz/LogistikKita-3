@@ -1,108 +1,69 @@
-// src/components/TrackingSection.jsx
-
 import React, { useState } from 'react';
-import { Search, Loader2, Truck, CheckCircle, Clock, Globe, XCircle, MapPin } from 'lucide-react';
+import { Search, Loader2, Truck, CheckCircle, Clock, Package, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const TrackingSection = ({ darkMode }) => {
+    const navigate = useNavigate();
     const [resi, setResi] = useState('');
     const [loading, setLoading] = useState(false);
-    const [trackingResult, setTrackingResult] = useState(null);
-    const [error, setError] = useState(null);
     
-    const API_MODEL = 'gemini-2.0-flash-exp'; 
-    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
+    // Data dummy untuk demo
+    const demoTrackingData = {
+        currentStatus: "ON_DELIVERY",
+        currentLocation: "KM 67 Tol Cipali, Jawa Barat",
+        timeline: [
+            { status: "PICKUP_COMPLETED", location: "Gudang Mojokerto", time: "Senin, 16 Des 08:00 WIB" },
+            { status: "AT_WAREHOUSE", location: "Sorting Center Surabaya", time: "Senin, 16 Des 12:30 WIB" },
+            { status: "DEPARTED", location: "Pelabuhan Tanjung Perak", time: "Senin, 16 Des 18:45 WIB" },
+            { status: "ON_DELIVERY", location: "KM 67 Tol Cipali", time: "Selasa, 17 Des 09:15 WIB" },
+            { status: "ESTIMATED_DELIVERY", location: "Gudang Jakarta", time: "Selasa, 17 Des 14:00 WIB" }
+        ]
+    };
 
-    const fetchWithRetry = async (url, options, maxRetries = 3) => {
-        for (let i = 0; i < maxRetries; i++) {
-            try {
-                const response = await fetch(url, options);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return await response.json();
-            } catch (err) {
-                if (i === maxRetries - 1) throw err;
-                const delay = Math.pow(2, i) * 1000;
-                await new Promise(resolve => setTimeout(resolve, delay));
-            }
+    const getStatusIcon = (status) => {
+        switch(status) {
+            case 'PICKUP_COMPLETED': return <Package size={16} className="text-green-500" />;
+            case 'AT_WAREHOUSE': return <MapPin size={16} className="text-blue-500" />;
+            case 'DEPARTED': return <Truck size={16} className="text-orange-500" />;
+            case 'ON_DELIVERY': return <Truck size={16} className="text-primary" />;
+            case 'ESTIMATED_DELIVERY': return <Clock size={16} className="text-purple-500" />;
+            default: return <CheckCircle size={16} className="text-gray-500" />;
         }
+    };
+
+    const getStatusText = (status) => {
+        const statusMap = {
+            'PICKUP_COMPLETED': 'Pickup Selesai',
+            'AT_WAREHOUSE': 'Di Gudang',
+            'DEPARTED': 'Berangkat',
+            'ON_DELIVERY': 'Dalam Pengiriman',
+            'ESTIMATED_DELIVERY': 'Estimasi Tiba'
+        };
+        return statusMap[status] || status;
     };
 
     const handleSearch = async (e) => {
         e.preventDefault();
-        setError(null);
-        setTrackingResult(null);
-        
-        if (!resi.trim()) {
-            setError("Mohon masukkan Nomor Resi atau ID Transaksi.");
-            return;
-        }
-
-        if (!API_KEY) {
-            setError("API Key tidak ditemukan. Pastikan file .env menggunakan format VITE_GEMINI_API_KEY");
-            return;
-        }
-
         setLoading(true);
-
-        const userQuery = `Lacak status pengiriman untuk nomor resi/ID: ${resi}. Berikan hasil dalam format JSON yang berisi currentStatus, currentLocation, dan timeline (array of objects: {status: string, location: string, time: string}). Buat data realistis untuk pengiriman FTL dari Mojokerto ke Jakarta/Surabaya/Luar Pulau.`;
         
-        const payload = {
-            contents: [{ parts: [{ text: userQuery }] }],
-            generationConfig: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: "OBJECT",
-                    properties: {
-                        currentStatus: { type: "STRING" },
-                        currentLocation: { type: "STRING" },
-                        timeline: {
-                            type: "ARRAY",
-                            items: {
-                                type: "OBJECT",
-                                properties: {
-                                    status: { type: "STRING" },
-                                    location: { type: "STRING" },
-                                    time: { type: "STRING" }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        };
-
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=${API_KEY}`;
-        
-        try {
-            const result = await fetchWithRetry(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (jsonText) {
-                setTrackingResult(JSON.parse(jsonText));
-            } else {
-                setError("Data tidak ditemukan atau format salah.");
-            }
-        } catch (err) {
-            console.error("Tracking API Error:", err);
-            setError("Gagal terhubung ke sistem pelacakan.");
-        } finally {
+        // Simulasi loading
+        setTimeout(() => {
             setLoading(false);
-        }
+            // Untuk demo, selalu tampilkan data dummy
+            navigate('/tracking/demo', { state: { trackingData: demoTrackingData, resi: resi || 'LKG-DEMO-001' } });
+        }, 800);
     };
 
     return (
         <div className="relative z-20">
-            <div className="w-full max-w-4xl mx-auto px-4 -mt-24" id="tracking">
-                <div className="glass-container p-6 md:p-10 shadow-2xl bg-white/90 dark:bg-surface-dark border-t-4 border-primary backdrop-blur-xl transition-all duration-300">
+            <div className="w-full max-w-4xl mx-auto px-4 -mt-16" id="tracking"> {/* FIXED: -mt-16 bukan -mt-24 */}
+                <div className={`glass-container p-6 md:p-8 shadow-2xl ${darkMode ? 'bg-gray-800/80' : 'bg-white/95'} backdrop-blur-xl transition-all duration-300`}>
                     
                     <div className="text-center mb-8">
-                        <h2 className="text-2xl font-black text-text-main dark:text-white">
+                        <h2 className="text-2xl font-black text-gray-900 dark:text-white">
                             Lacak Status Pengiriman
                         </h2>
-                        <p className="text-text-muted dark:text-gray-400 text-sm mt-1">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                             Masukkan Nomor Resi atau ID Transaksi Anda
                         </p>
                     </div>
@@ -114,36 +75,54 @@ const TrackingSection = ({ darkMode }) => {
                                 type="text" 
                                 value={resi}
                                 onChange={(e) => setResi(e.target.value)}
-                                placeholder="Contoh: LKG-8829100" 
-                                className="input-field pl-12 py-4 text-lg bg-white dark:bg-black/20"
+                                placeholder="Contoh: LKG-8829100 atau LKG-DEMO-001" 
+                                className="input-field pl-12 py-4 text-lg"
                                 disabled={loading}
                             />
                         </div>
                         <button 
                             type="submit" 
-                            className="btn-primary md:w-auto px-10 py-4 h-full shadow-lg flex items-center justify-center gap-2"
+                            className="btn-primary md:w-auto px-8 py-4 h-full shadow-lg flex items-center justify-center gap-2"
                             disabled={loading}
                         >
                             {loading ? <Loader2 size={20} className="animate-spin" /> : 'Lacak'}
                         </button>
                     </form>
 
-                    {(error || trackingResult) && (
-                        <div className="mt-8 animate-fade-in border-t border-gray-200 dark:border-gray-700 pt-8">
-                            {error && (
-                                <div className="flex items-center gap-3 text-red-500 bg-red-50 dark:bg-red-900/10 p-4 rounded-xl border border-red-100 dark:border-red-800">
-                                    <XCircle size={20} />
-                                    <span className="font-medium">{error}</span>
+                    {/* Demo Hint */}
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                            💡 <strong>Tips:</strong> Gunakan <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">LKG-DEMO-001</code> untuk melihat demo pelacakan
+                        </p>
+                    </div>
+
+                    {/* Quick Status Preview */}
+                    <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                            <Truck size={18} />
+                            Dokumentasi Armada Terbaru
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {[
+                                { id: 1, code: 'LKG-8829100', route: 'Jakarta → Surabaya', status: 'DELIVERED' },
+                                { id: 2, code: 'LKG-8829101', route: 'Medan → Batam', status: 'ON_DELIVERY' },
+                                { id: 3, code: 'LKG-8829102', route: 'Bandung → Yogyakarta', status: 'AT_WAREHOUSE' },
+                                { id: 4, code: 'LKG-8829103', route: 'Semarang → Malang', status: 'PROCESSING' }
+                            ].map((item) => (
+                                <div key={item.id} className={`p-3 rounded-lg border ${darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="font-mono text-sm font-bold">{item.code}</p>
+                                            <p className="text-xs text-gray-500">{item.route}</p>
+                                        </div>
+                                        <span className={`px-2 py-1 text-xs rounded-full ${item.status === 'DELIVERED' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'}`}>
+                                            {item.status === 'DELIVERED' ? 'Selesai' : 'Aktif'}
+                                        </span>
+                                    </div>
                                 </div>
-                            )}
-                            
-                            {trackingResult && (
-                                <div className="bg-gray-50 dark:bg-black/20 rounded-xl p-6 border border-gray-100 dark:border-gray-700">
-                                    {/* seluruh isi timeline TETAP */}
-                                </div>
-                            )}
+                            ))}
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>

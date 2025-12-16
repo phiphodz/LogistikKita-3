@@ -122,9 +122,9 @@ USE_TZ = True
 # Static files
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Untuk development
-]
+# STATICFILES_DIRS = [
+# BASE_DIR / "static",  # Untuk development
+#]
 
 # Untuk production di Codespace
 if not DEBUG:

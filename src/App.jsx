@@ -1,7 +1,7 @@
-// src/App.jsx (KODE LENGKAP - DENGAN DEBUG INFO)
+// src/App.jsx (UPDATED VERSION - WITH PROTECTED ROUTE)
 
 import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 // --- KOMPONEN WAJIB ---
 import Navbar from './components/Navbar';
@@ -9,7 +9,10 @@ import Footer from './components/Footer';
 import Preloader from './components/Preloader';
 import ScrollNav from './components/ScrollNav';
 import FirebaseStatus from './components/FirebaseStatus';
-import DebugInfo from './components/DebugInfo'; // ✅ DEBUG INFO BARU
+import DebugInfo from './components/DebugInfo';
+
+// --- PROTECTED ROUTE ---
+import ProtectedRoute from './components/ProtectedRoute';
 
 // --- KOMPONEN LANDING PAGE ---
 import HeroSection from './components/HeroSection';
@@ -173,11 +176,11 @@ const App = () => {
                         {/* 1. LANDING PAGE */}
                         <Route path="/" element={<LandingPage />} />
                         
-                        {/* 2. FITUR UTAMA */}
+                        {/* 2. FITUR UTAMA (Public) */}
                         <Route path="/gabung-mitra" element={<MitraRegistrationPage darkMode={darkMode} />} />
                         <Route path="/simulasi-harga" element={<SimulasiHargaPage darkMode={darkMode} />} />
                         
-                        {/* 3. AUTHENTICATION */}
+                        {/* 3. AUTHENTICATION (Public) */}
                         <Route path="/login" element={<CustomerLoginPage />} />
                         <Route path="/signup/customer" element={<CustomerSignupPage />} />
                         <Route path="/signup/check-email" element={<CheckEmailPage />} />
@@ -185,12 +188,34 @@ const App = () => {
                         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                         <Route path="/reset-password" element={<ResetPasswordPage />} />
                         
-                        {/* 4. DASHBOARD & LAINNYA */}
-                        <Route path="/dashboard" element={<DashboardPage />} />
+                        {/* 4. PROTECTED ROUTES (Hanya untuk yang login) */}
+                        <Route path="/dashboard" element={
+                            <ProtectedRoute>
+                                <DashboardPage />
+                            </ProtectedRoute>
+                        } />
+                        
+                        {/* Contoh route protected lainnya nanti: */}
+                        {/* <Route path="/profile" element={
+                            <ProtectedRoute>
+                                <ProfilePage />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/orders" element={
+                            <ProtectedRoute>
+                                <OrdersPage />
+                            </ProtectedRoute>
+                        } /> */}
+                        
+                        {/* 5. MAINTENANCE & FALLBACK */}
                         <Route path="/maintenance" element={<MaintenancePage />} />
                         <Route path="/tracking/demo" element={<MaintenancePage />} />
                         
-                        {/* 5. FALLBACK ROUTE */}
+                        {/* 6. REDIRECT OLD ROUTES */}
+                        <Route path="/signup" element={<Navigate to="/signup/customer" replace />} />
+                        <Route path="/register" element={<Navigate to="/signup/customer" replace />} />
+                        
+                        {/* 7. FALLBACK ROUTE */}
                         <Route path="*" element={<MaintenancePage />} />
                     </Routes>
                 </main>
@@ -202,7 +227,7 @@ const App = () => {
             <FirebaseStatus isReady={isFirebaseReady} error={firebaseError} />
             <ScrollNav darkMode={darkMode} />
             
-            {/* ✅ DEBUG INFO - TAMBAH DI SINI */}
+            {/* ✅ DEBUG INFO */}
             <DebugInfo />
             
         </div>

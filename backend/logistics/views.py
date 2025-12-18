@@ -1,10 +1,11 @@
-# /backend/logistics/views.py (KODE FINAL YANG SUDAH TERINTEGRASI PENUH DENGAN CUSTOMER PROFILE)
+# /backend/logistics/views.py (UPDATED WITH JWT TOKEN)
 
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.throttling import AnonRateThrottle 
+from rest_framework_simplejwt.tokens import RefreshToken  # ← TAMBAH IMPORT INI
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -307,7 +308,7 @@ def send_verification_email(user, request):
 class CustomerRegistrationView(APIView):
     """
     Endpoint: /api/customer/register/
-    Mendaftarkan Customer (Shipper) dan mengirim email verifikasi.
+    Mendaftarkan Customer (Shipper) dengan AUTO AKTIF dan JWT TOKEN.
     """
     permission_classes = [AllowAny]
     throttle_classes = [RegistrationThrottle] 
@@ -323,6 +324,7 @@ class CustomerRegistrationView(APIView):
         company_name = data.get('company_name', '').strip()
         city = data.get('city', '').strip()
         address = data.get('address', '').strip()
+        customer_type = data.get('customer_type', 'personal')
 
         # 1. Validasi Input Dasar
         if not all([username, email, password, full_name, company_name, city, address]) or len(password) < 8:
@@ -332,38 +334,49 @@ class CustomerRegistrationView(APIView):
         if User.objects.filter(Q(username=username) | Q(email=email)).exists():
             return Response({"error": "Username (No WA) atau Email sudah terdaftar."}, status=409)
 
-        # 3. Cek reCAPTCHA (Dummy)
-        # if not data.get('recaptcha_token'): return Response({"error": "Verifikasi reCAPTCHA gagal."}, status=403)
-
         try:
             with transaction.atomic():
-                # A. Buat User baru (is_active=False default)
+                # A. Buat User baru - AUTO AKTIF (is_active=True)
                 user = User.objects.create_user(
                     username=username, 
                     email=email, 
                     password=password, 
                     first_name=full_name,
-                    is_active=False # Wajib non-aktifkan sampai verifikasi email
+                    is_active=True  # ← AUTO AKTIF UNTUK DEVELOPMENT
                 )
                 
-                # B. Buat CustomerProfile dan simpan data dari form
-                CustomerProfile.objects.create( # <--- PERBAIKAN UTAMA: Call model create
+                # B. Buat CustomerProfile
+                CustomerProfile.objects.create(
                     user=user,
                     phone_number=username, 
                     company_name=company_name,
                     city=city,
                     address=address,
-                    risk_status='CAUTION' 
+                    risk_status='SAFE'  # ← LANGSUNG SAFE KARENA AUTO VERIFY
                 )
                 
-                # C. Kirim Email Verifikasi
-                send_verification_email(user, request)
+                # C. OPTIONAL: Kirim Email Verifikasi (console saja)
+                # send_verification_email(user, request)
             
-            return Response({"message": "Pendaftaran Sukses! Cek email untuk aktivasi."}, status=201)
+            # 🚀 GENERATE JWT TOKEN UNTUK AUTO LOGIN
+            refresh = RefreshToken.for_user(user)
+            
+            return Response({
+                "message": "Pendaftaran berhasil! Akun telah aktif.",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "name": user.first_name,
+                    "customer_type": customer_type
+                }
+            }, status=201)
 
         except Exception as e:
             logger.error(f"Customer Registration Error: {e}")
-            return Response({"error": f"Gagal mendaftar: {str(e)}. (Kesalahan Server/DB)."}, status=500)
+            return Response({"error": f"Gagal mendaftar: {str(e)}"}, status=500)
 
 
 class CustomerVerificationView(APIView):

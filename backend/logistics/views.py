@@ -261,7 +261,7 @@ class MitraRegistrationView(APIView):
                     return Response({"error": "Password wajib diisi."}, status=400)
 
                 user = User.objects.create_user(username=phone, email=data.get('email', ''), password=password, first_name=name)
-                user.is_active = False 
+                user.is_active = True 
 
                 MitraArmada.objects.create(
                     user=user,

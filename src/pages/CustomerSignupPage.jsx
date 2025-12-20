@@ -1,4 +1,4 @@
-// src/pages/CustomerSignupPage.jsx (PROFESSIONAL VERSION)
+// src/pages/CustomerSignupPage.jsx (UPDATED WITH JWT AUTO-LOGIN)
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -6,7 +6,7 @@ import axios from 'axios';
 import { 
     User, Mail, Phone, Lock, Home, MapPin, Building, 
     Loader2, Truck, Eye, EyeOff, Briefcase, UserCircle,
-    Check, AlertCircle
+    Check, AlertCircle, Shield
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
@@ -109,6 +109,10 @@ const CustomerSignupPage = () => {
             setError('Konfirmasi password tidak cocok');
             return;
         }
+        if (formData.username && !/^[0-9]+$/.test(formData.username)) {
+            setError('Nomor WhatsApp harus berupa angka');
+            return;
+        }
         setStep(3);
     };
 
@@ -120,16 +124,24 @@ const CustomerSignupPage = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        setSuccess('');
+
+        // Validasi akhir sebelum submit
+        if (!formData.city) {
+            setError('Silakan pilih kota/kabupaten');
+            setLoading(false);
+            return;
+        }
 
         // Siapkan payload sesuai tipe customer
         const payload = {
             customer_type: formData.customer_type,
             full_name: formData.full_name,
-            username: formData.username,
+            username: formData.username, // Nomor WA
             email: formData.email,
             password: formData.password,
             password2: formData.password2,
-            phone: formData.phone || formData.username, // Fallback ke username jika phone kosong
+            phone: formData.phone || formData.username,
             address: formData.address,
             city: formData.city,
             
@@ -150,30 +162,51 @@ const CustomerSignupPage = () => {
         try {
             const response = await fetch(REGISTER_ENDPOINT, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify(payload),
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                setSuccess('Pendaftaran berhasil! Cek email untuk verifikasi.');
-                setTimeout(() => navigate('/signup/check-email', { 
-                    state: { 
-                        email: formData.email,
-                        customerType: formData.customer_type 
-                    } 
-                }), 1500);
+                // 🚀 SIMPAN JWT TOKEN KE LOCALSTORAGE
+                if (data.access && data.refresh) {
+                    localStorage.setItem('accessToken', data.access);
+                    localStorage.setItem('refreshToken', data.refresh);
+                    localStorage.setItem('userIdentifier', formData.email);
+                    localStorage.setItem('userType', formData.customer_type);
+                    
+                    setSuccess('Pendaftaran berhasil! Mengarahkan ke dashboard...');
+                    
+                    // Redirect langsung ke dashboard (auto-login)
+                    setTimeout(() => {
+                        navigate('/dashboard', { replace: true });
+                    }, 1500);
+                } else {
+                    // Fallback: Jika backend belum update ke JWT
+                    setSuccess('Pendaftaran berhasil! Silakan login dengan akun Anda.');
+                    setTimeout(() => navigate('/login', { 
+                        state: { 
+                            email: formData.email,
+                            message: 'Pendaftaran berhasil! Silakan login.' 
+                        } 
+                    }), 1500);
+                }
             } else {
+                // Error handling
                 const errorMsg = data.detail || 
                                (data.email && data.email[0]) || 
                                (data.username && data.username[0]) || 
+                               (data.error && (typeof data.error === 'string' ? data.error : JSON.stringify(data.error))) ||
                                'Registrasi gagal. Cek data Anda.';
                 setError(errorMsg);
             }
         } catch (err) {
-            setError('Gagal terhubung ke server. Periksa koneksi atau URL API.');
             console.error('API Error:', err);
+            setError('Gagal terhubung ke server. Periksa koneksi atau URL API.');
         } finally {
             setLoading(false);
         }
@@ -342,9 +375,10 @@ const CustomerSignupPage = () => {
                                                 name="username" 
                                                 value={formData.username}
                                                 onChange={handleChange}
-                                                placeholder="0812xxxxxxx"
+                                                placeholder="081234567890"
                                                 className="input-field pl-12"
                                                 required
+                                                inputMode="numeric"
                                             />
                                         </div>
                                     </div>
@@ -636,8 +670,7 @@ const CustomerSignupPage = () => {
                                     <AlertCircle size={20} className="text-blue-500 mt-0.5" />
                                     <div>
                                         <p className="text-sm text-blue-700 dark:text-blue-300">
-                                            Setelah mendaftar, Anda akan menerima email verifikasi.
-                                            Akun harus diverifikasi sebelum bisa login.
+                                            Setelah mendaftar, Anda akan <strong>langsung login</strong> dan diarahkan ke dashboard.
                                         </p>
                                     </div>
                                 </div>
@@ -654,14 +687,19 @@ const CustomerSignupPage = () => {
                             <button 
                                 onClick={handleSubmit}
                                 disabled={loading}
-                                className="btn-primary px-8"
+                                className="btn-primary px-8 flex items-center gap-2"
                             >
                                 {loading ? (
                                     <>
-                                        <Loader2 size={20} className="animate-spin mr-2" />
-                                        Memproses...
+                                        <Loader2 size={20} className="animate-spin" />
+                                        <span>Memproses...</span>
                                     </>
-                                ) : 'Daftar Sekarang'}
+                                ) : (
+                                    <>
+                                        <Shield size={18} />
+                                        <span>Daftar & Masuk Sekarang</span>
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>
@@ -704,24 +742,30 @@ const CustomerSignupPage = () => {
                     </div>
                 )}
 
+                {/* Error Message */}
                 {error && (
-                    <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 text-red-600 dark:text-red-300 flex items-start gap-3">
-                        <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
-                        <div>
-                            <p className="font-medium">{error}</p>
-                            {error.includes('server') && (
-                                <p className="text-sm mt-1">Pastikan backend Django sedang berjalan di port 8000</p>
-                            )}
+                    <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 text-red-600 dark:text-red-300">
+                        <div className="flex items-start gap-3">
+                            <AlertCircle size={20} className="mt-0.5 flex-shrink-0" />
+                            <div>
+                                <p className="font-medium">{error}</p>
+                                {error.includes('server') && (
+                                    <p className="text-sm mt-1">Pastikan backend Django sedang berjalan</p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
 
+                {/* Success Message */}
                 {success && (
-                    <div className="mb-6 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 text-green-700 dark:text-green-300 flex items-start gap-3">
-                        <Check size={20} className="mt-0.5 flex-shrink-0" />
-                        <div>
-                            <p className="font-medium">{success}</p>
-                            <p className="text-sm mt-1">Anda akan diarahkan ke halaman verifikasi email...</p>
+                    <div className="mb-6 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 text-green-700 dark:text-green-300">
+                        <div className="flex items-start gap-3">
+                            <Check size={20} className="mt-0.5 flex-shrink-0" />
+                            <div>
+                                <p className="font-medium">{success}</p>
+                                <p className="text-sm mt-1">Anda akan diarahkan ke dashboard...</p>
+                            </div>
                         </div>
                     </div>
                 )}

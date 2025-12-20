@@ -1,4 +1,4 @@
-// src/pages/CustomerLoginPage.jsx (FINAL VERSION - MATCHED WITH APPCONFIG)
+// src/pages/CustomerLoginPage.jsx (UPDATED VERSION)
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -19,7 +19,7 @@ const CustomerLoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [logoError, setLogoError] = useState(false);
-    const [unverifiedEmail, setUnverifiedEmail] = useState(''); // Untuk resend verification
+    const [unverifiedEmail, setUnverifiedEmail] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -28,7 +28,6 @@ const CustomerLoginPage = () => {
         if (unverifiedEmail) setUnverifiedEmail('');
     };
 
-    // Fungsi untuk resend verification email
     const handleResendVerification = async () => {
         if (!unverifiedEmail) return;
         
@@ -58,21 +57,27 @@ const CustomerLoginPage = () => {
         setSuccess('');
         setUnverifiedEmail('');
 
-        // 1. Frontend Validation
+        // 1. Validasi
         if (!formData.identifier || !formData.password) {
             setError(`${loginMethod === 'phone' ? 'Nomor WA' : 'Email'} dan Password wajib diisi.`);
             setLoading(false);
             return;
         }
 
-        // Validasi format email jika login dengan email
+        // Validasi format
         if (loginMethod === 'email' && !formData.identifier.includes('@')) {
             setError('Format email tidak valid.');
             setLoading(false);
             return;
         }
 
-        // Format payload sesuai backend expectation
+        if (loginMethod === 'phone' && !/^[0-9]+$/.test(formData.identifier)) {
+            setError('Format nomor WhatsApp tidak valid (hanya angka).');
+            setLoading(false);
+            return;
+        }
+
+        // Payload sesuai Django expectation
         const payload = {
             username: formData.identifier, // Django expect 'username' field
             password: formData.password
@@ -81,18 +86,21 @@ const CustomerLoginPage = () => {
         try {
             const response = await fetch(ENDPOINTS.LOGIN, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload),
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                // SUCCESS: Simpan Token dan Redirect
+                // 🚀 SUCCESS: Simpan semua token
                 localStorage.setItem('accessToken', data.access);
                 localStorage.setItem('refreshToken', data.refresh);
                 localStorage.setItem('userIdentifier', formData.identifier);
-                localStorage.setItem('userType', 'customer'); // Tambah user type
+                localStorage.setItem('userType', 'customer');
                 
                 // Tampilkan success message
                 setSuccess('Login berhasil! Mengarahkan ke dashboard...');
@@ -100,10 +108,10 @@ const CustomerLoginPage = () => {
                 // Delay sebelum redirect
                 setTimeout(() => {
                     navigate('/dashboard', { replace: true });
-                }, 1500);
+                }, 1000);
                 
             } else {
-                // ERROR HANDLING BERDASARKAN STATUS CODE
+                // ERROR HANDLING
                 switch (response.status) {
                     case 401:
                         setError('Email/Nomor WA atau Password salah. Cek kembali input Anda.');
